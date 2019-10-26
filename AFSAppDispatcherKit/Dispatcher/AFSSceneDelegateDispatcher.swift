@@ -31,7 +31,7 @@ open class AFSSceneDelegateDispatcher : UIResponder {
     open override func responds(to aSelector: Selector!) -> Bool {
         
         // 01 Check if the selector is member of UIApplicationDelegate
-        if let input = aSelector, input.isMember(of: UIWindowSceneDelegate.self) {
+        if let input = aSelector, input.isMember(of: UISceneDelegate.self) {
             
             // 02 Check if the selector is handled in one of the stored service objects
             for service in sceneServices where service.responds(to: input) {

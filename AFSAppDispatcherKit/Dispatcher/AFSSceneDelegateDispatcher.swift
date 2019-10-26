@@ -3,6 +3,7 @@
 //  AFSAppDispatcherKit
 //
 //  Created by Arkadi Yoskovitz on 9/26/19.
+//  Copyright © 2019 Arkadi Yoskovitz. All rights reserved.
 //
 import UIKit
 import CloudKit

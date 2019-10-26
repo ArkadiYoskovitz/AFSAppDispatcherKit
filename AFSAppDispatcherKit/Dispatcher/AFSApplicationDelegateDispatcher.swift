@@ -1,9 +1,9 @@
 //
 //  AFSAppDelegateDispatcher.swift
-//  
+//  AFSAppDispatcherKit
 //
 //  Created by Arkadi Yoskovitz on 08/07/2017.
-//  Copyright © 2017 Arkadi Yoskovitz. All rights reserved.
+//  Copyright © 2019 Arkadi Yoskovitz. All rights reserved.
 //
 import UIKit
 import CloudKit

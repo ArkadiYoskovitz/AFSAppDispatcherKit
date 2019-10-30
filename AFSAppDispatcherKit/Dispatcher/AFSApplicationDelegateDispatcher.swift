@@ -14,6 +14,18 @@ import ObjcExtensions
 /// ================================================================================================================ ///
 open class AFSApplicationDelegateDispatcher : UIResponder {
     
+    public override init() {
+        super.init()
+        _ = self.monitoredApplicationServices
+    }
+    
+    ///
+    /// A public access to the services monitored by the dispatcher, allows a consumer of the framework to make a conviniance access variables
+    ///
+    public var monitoredApplicationServices : [AFSApplicationDelegateService] {
+        return applicationServices
+    }
+    
     ///
     /// Used to obtain an array of AFSAppDelegateService which are used as plugins,
     ///     to split handling UIApplicationDelegate implementation between several distinct control objects
@@ -25,7 +37,7 @@ open class AFSApplicationDelegateDispatcher : UIResponder {
         return []
     }
     
-    fileprivate lazy var _services : [AFSApplicationDelegateService] = {
+    fileprivate lazy var applicationServices : [AFSApplicationDelegateService] = {
         return self.obtainServices()
     }()
     
@@ -35,7 +47,7 @@ open class AFSApplicationDelegateDispatcher : UIResponder {
         if let input = aSelector, input.isMember(of: UIApplicationDelegate.self) {
             
             // 02 Check if the selector is handled in one of the stored service objects
-            for service in _services where service.responds(to: input) {
+            for service in applicationServices where service.responds(to: input) {
                 return true
             }
             
@@ -66,14 +78,14 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 2.0, *)
     open func applicationDidFinishLaunching(_ application: UIApplication) {
         
-        for service in _services {
+        for service in applicationServices {
             service.applicationDidFinishLaunching?(application)
         }
     }
     
     @available(iOS 6.0, *)
     open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        for service in _services {
+        for service in applicationServices {
             guard let serviceResult = service.application?(application, willFinishLaunchingWithOptions: launchOptions) else { continue }
             guard !serviceResult else { continue }
             return false
@@ -84,7 +96,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 3.0, *)
     open func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]?) -> Bool {
         
-        for service in _services {
+        for service in applicationServices {
             guard let serviceResult = service.application?(application, didFinishLaunchingWithOptions: launchOptions) else { continue }
             guard !serviceResult else { continue }
             return false
@@ -95,7 +107,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 2.0, *)
     open func applicationDidBecomeActive(_ application: UIApplication) {
         
-        for service in _services {
+        for service in applicationServices {
             service.applicationDidBecomeActive?(application)
         }
     }
@@ -103,7 +115,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 2.0, *)
     open func applicationWillResignActive(_ application: UIApplication) {
         
-        for service in _services {
+        for service in applicationServices {
             service.applicationWillResignActive?(application)
         }
     }
@@ -111,7 +123,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS, introduced: 2.0, deprecated: 9.0, message: "Please use application:openURL:options:")
     open func application(_ application: UIApplication, handleOpen url: URL) -> Bool {
         
-        for service in _services {
+        for service in applicationServices {
             guard let serviceResult = service.application?(application, handleOpen: url) else { continue }
             guard !serviceResult else { continue }
             return false
@@ -122,7 +134,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS, introduced: 4.2, deprecated: 9.0, message: "Please use application:openURL:options:")
     open func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
         
-        for service in _services {
+        for service in applicationServices {
             guard let serviceResult = service.application?(application, open: url, sourceApplication: sourceApplication, annotation: annotation) else { continue }
             guard !serviceResult else { continue }
             return false
@@ -133,7 +145,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 9.0, *)
     open func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any]) -> Bool {
 
-        for service in _services {
+        for service in applicationServices {
 
             guard let serviceResult = service.application?(app, open: url, options: options) else { continue }
             guard !serviceResult else { continue }
@@ -145,7 +157,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 2.0, *)
     open func applicationDidReceiveMemoryWarning(_ application: UIApplication) {
         
-        for service in _services {
+        for service in applicationServices {
             service.applicationDidReceiveMemoryWarning?(application)
         }
     }
@@ -153,7 +165,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 2.0, *)
     open func applicationWillTerminate(_ application: UIApplication) {
         
-        for service in _services {
+        for service in applicationServices {
             service.applicationWillTerminate?(application)
         }
     }
@@ -161,7 +173,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 2.0, *)
     open func applicationSignificantTimeChange(_ application: UIApplication) {
         
-        for service in _services {
+        for service in applicationServices {
             service.applicationSignificantTimeChange?(application)
         }
     }
@@ -169,7 +181,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 2.0, *)
     open func application(_ application: UIApplication, willChangeStatusBarOrientation newStatusBarOrientation: UIInterfaceOrientation, duration: TimeInterval) {
         
-        for service in _services {
+        for service in applicationServices {
             service.application?(application, willChangeStatusBarOrientation: newStatusBarOrientation, duration: duration)
         }
     }
@@ -177,7 +189,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 2.0, *)
     open func application(_ application: UIApplication, didChangeStatusBarOrientation oldStatusBarOrientation: UIInterfaceOrientation) {
         
-        for service in _services {
+        for service in applicationServices {
             service.application?(application, didChangeStatusBarOrientation: oldStatusBarOrientation)
         }
     }
@@ -185,7 +197,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 2.0, *)
     open func application(_ application: UIApplication, willChangeStatusBarFrame newStatusBarFrame: CGRect) {
         
-        for service in _services {
+        for service in applicationServices {
             service.application?(application, willChangeStatusBarFrame: newStatusBarFrame)
         }
     }
@@ -193,7 +205,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 2.0, *)
     open func application(_ application: UIApplication, didChangeStatusBarFrame oldStatusBarFrame: CGRect) {
         
-        for service in _services {
+        for service in applicationServices {
             service.application?(application, didChangeStatusBarFrame: oldStatusBarFrame)
         }
     }
@@ -202,7 +214,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS, introduced: 8.0, deprecated: 10.0)
     open func application(_ application: UIApplication, didRegister notificationSettings: UIUserNotificationSettings) {
         
-        for service in _services {
+        for service in applicationServices {
             service.application?(application, didRegister: notificationSettings)
         }
     }
@@ -210,7 +222,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 3.0, *)
     open func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         
-        for service in _services {
+        for service in applicationServices {
             service.application?(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken)
         }
     }
@@ -218,7 +230,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 3.0, *)
     open func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         
-        for service in _services {
+        for service in applicationServices {
             service.application?(application, didFailToRegisterForRemoteNotificationsWithError: error)
         }
     }
@@ -228,7 +240,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS, introduced: 3.0, deprecated: 10.0, message: "Use UserNotifications Framework's -[UNUserNotificationCenterDelegate willPresentNotification:withCompletionHandler:] or -[UNUserNotificationCenterDelegate didReceiveNotificationResponse:withCompletionHandler:] for user visible notifications and -[UIApplicationDelegate application:didReceiveRemoteNotification:fetchCompletionHandler:] for silent remote notifications")
     open func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) {
         
-        for service in _services {
+        for service in applicationServices {
             service.application?(application, didReceiveRemoteNotification: userInfo)
         }
     }
@@ -236,7 +248,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS, introduced: 4.0, deprecated: 10.0, message: "Use UserNotifications Framework's -[UNUserNotificationCenterDelegate willPresentNotification:withCompletionHandler:] or -[UNUserNotificationCenterDelegate didReceiveNotificationResponse:withCompletionHandler:]")
     open func application(_ application: UIApplication, didReceive notification: UILocalNotification) {
         
-        for service in _services {
+        for service in applicationServices {
             service.application?(application, didReceive: notification)
         }
     }
@@ -247,7 +259,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS, introduced: 8.0, deprecated: 10.0, message: "Use UserNotifications Framework's -[UNUserNotificationCenterDelegate didReceiveNotificationResponse:withCompletionHandler:]")
     open func application(_ application: UIApplication, handleActionWithIdentifier identifier: String?, for notification: UILocalNotification, completionHandler: @escaping () -> Void) {
         
-        for service in _services {
+        for service in applicationServices {
             service.application?(application, handleActionWithIdentifier: identifier, for: notification, completionHandler: completionHandler)
         }
     }
@@ -255,7 +267,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS, introduced: 9.0, deprecated: 10.0, message: "Use UserNotifications Framework's -[UNUserNotificationCenterDelegate didReceiveNotificationResponse:withCompletionHandler:]")
     open func application(_ application: UIApplication, handleActionWithIdentifier identifier: String?, forRemoteNotification userInfo: [AnyHashable : Any], withResponseInfo responseInfo: [AnyHashable : Any], completionHandler: @escaping () -> Void) {
         
-        for service in _services {
+        for service in applicationServices {
             service.application?(application, handleActionWithIdentifier: identifier, forRemoteNotification: userInfo, withResponseInfo: responseInfo, completionHandler: completionHandler)
         }
     }
@@ -266,7 +278,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS, introduced: 8.0, deprecated: 10.0, message: "Use UserNotifications Framework's -[UNUserNotificationCenterDelegate didReceiveNotificationResponse:withCompletionHandler:]")
     open func application(_ application: UIApplication, handleActionWithIdentifier identifier: String?, forRemoteNotification userInfo: [AnyHashable : Any], completionHandler: @escaping () -> Void) {
         
-        for service in _services {
+        for service in applicationServices {
             service.application?(application, handleActionWithIdentifier: identifier, forRemoteNotification: userInfo, completionHandler: completionHandler)
         }
     }
@@ -274,7 +286,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS, introduced: 9.0, deprecated: 10.0, message: "Use UserNotifications Framework's -[UNUserNotificationCenterDelegate didReceiveNotificationResponse:withCompletionHandler:]")
     open func application(_ application: UIApplication, handleActionWithIdentifier identifier: String?, for notification: UILocalNotification, withResponseInfo responseInfo: [AnyHashable : Any], completionHandler: @escaping () -> Void) {
         
-        for service in _services {
+        for service in applicationServices {
             service.application?(application, handleActionWithIdentifier: identifier, for: notification, withResponseInfo: responseInfo, completionHandler: completionHandler)
         }
     }
@@ -288,7 +300,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
         var didPerformFetch : Bool = false
         let aSelector = #selector(UIApplicationDelegate.application(_:didReceiveRemoteNotification:fetchCompletionHandler:))
         
-        for service in _services {
+        for service in applicationServices {
             
             guard service.responds(to: aSelector) else { continue }
             
@@ -307,7 +319,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
         var didPerformFetch : Bool = false
         let aSelector = #selector(UIApplicationDelegate.application(_:performFetchWithCompletionHandler:))
         
-        for service in _services {
+        for service in applicationServices {
             
             guard service.responds(to: aSelector) else { continue }
             
@@ -324,7 +336,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 9.0, *)
     open func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
         
-        for service in _services {
+        for service in applicationServices {
             service.application?(application, performActionFor: shortcutItem, completionHandler: completionHandler)
         }
     }
@@ -337,7 +349,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 7.0, *)
     open func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
         
-        for service in _services {
+        for service in applicationServices {
             service.application?(application, handleEventsForBackgroundURLSession: identifier, completionHandler: completionHandler)
         }
     }
@@ -345,7 +357,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 8.2, *)
     open func application(_ application: UIApplication, handleWatchKitExtensionRequest userInfo: [AnyHashable : Any]?, reply: @escaping ([AnyHashable : Any]?) -> Void) {
         
-        for service in _services {
+        for service in applicationServices {
             service.application?(application, handleWatchKitExtensionRequest: userInfo, reply: reply)
         }
     }
@@ -353,7 +365,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 9.0, *)
     open func applicationShouldRequestHealthAuthorization(_ application: UIApplication) {
         
-        for service in _services {
+        for service in applicationServices {
             service.applicationShouldRequestHealthAuthorization?(application)
         }
     }
@@ -361,7 +373,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 11.0, *)
     open func application(_ application: UIApplication, handle intent: INIntent, completionHandler: @escaping (INIntentResponse) -> Void)
     {
-        for service in _services {
+        for service in applicationServices {
             service.application?(application, handle: intent, completionHandler: completionHandler)
         }
     }
@@ -369,7 +381,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 4.0, *)
     open func applicationDidEnterBackground(_ application: UIApplication) {
         
-        for service in _services {
+        for service in applicationServices {
             service.applicationDidEnterBackground?(application)
         }
     }
@@ -377,7 +389,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 4.0, *)
     open func applicationWillEnterForeground(_ application: UIApplication) {
         
-        for service in _services {
+        for service in applicationServices {
             service.applicationWillEnterForeground?(application)
         }
     }
@@ -385,7 +397,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 4.0, *)
     open func applicationProtectedDataWillBecomeUnavailable(_ application: UIApplication) {
         
-        for service in _services {
+        for service in applicationServices {
             service.applicationProtectedDataWillBecomeUnavailable?(application)
         }
     }
@@ -393,7 +405,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 4.0, *)
     open func applicationProtectedDataDidBecomeAvailable(_ application: UIApplication) {
         
-        for service in _services {
+        for service in applicationServices {
             service.applicationProtectedDataDidBecomeAvailable?(application)
         }
     }
@@ -401,7 +413,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 6.0, *)
     open func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
         
-        for service in _services {
+        for service in applicationServices {
             guard let orientationMask = service.application?(application, supportedInterfaceOrientationsFor: window) else { continue }
             return orientationMask
         }
@@ -414,7 +426,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 8.0, *)
     open func application(_ application: UIApplication, shouldAllowExtensionPointIdentifier extensionPointIdentifier: UIApplication.ExtensionPointIdentifier) -> Bool {
         
-        for service in _services {
+        for service in applicationServices {
             guard let serviceResult = service.application?(application, shouldAllowExtensionPointIdentifier: extensionPointIdentifier) else { continue }
             guard !serviceResult else { continue }
             return false
@@ -425,7 +437,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 6.0, *)
     open func application(_ application: UIApplication, viewControllerWithRestorationIdentifierPath identifierComponents: [String], coder: NSCoder) -> UIViewController? {
         
-        for service in _services {
+        for service in applicationServices {
             guard let viewController = service.application?(application, viewControllerWithRestorationIdentifierPath: identifierComponents, coder: coder) else { continue }
             return viewController
         }
@@ -435,7 +447,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 6.0, *)
     open func application(_ application: UIApplication, shouldSaveApplicationState coder: NSCoder) -> Bool {
         
-        for service in _services {
+        for service in applicationServices {
             guard let serviceResult = service.application?(application, shouldSaveApplicationState: coder) else { continue }
             guard serviceResult else { continue }
             return true
@@ -446,7 +458,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 6.0, *)
     open func application(_ application: UIApplication, shouldRestoreApplicationState coder: NSCoder) -> Bool {
         
-        for service in _services {
+        for service in applicationServices {
             guard let serviceResult = service.application?(application, shouldRestoreApplicationState: coder) else { continue }
             guard serviceResult else { continue }
             return true
@@ -457,7 +469,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 6.0, *)
     open func application(_ application: UIApplication, willEncodeRestorableStateWith coder: NSCoder) {
         
-        for service in _services {
+        for service in applicationServices {
             service.application?(application, willEncodeRestorableStateWith: coder)
         }
     }
@@ -465,7 +477,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 6.0, *)
     open func application(_ application: UIApplication, didDecodeRestorableStateWith coder: NSCoder) {
         
-        for service in _services {
+        for service in applicationServices {
             service.application?(application, didDecodeRestorableStateWith: coder)
         }
     }
@@ -478,7 +490,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     open func application(_ application: UIApplication, willContinueUserActivityWithType userActivityType: String) -> Bool {
         
         var result = false
-        for service in _services {
+        for service in applicationServices {
             guard let serviceResult = service.application?(application, willContinueUserActivityWithType: userActivityType) else { continue }
             result = serviceResult
         }
@@ -493,7 +505,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     open func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
 
         var result = false
-        for service in _services {
+        for service in applicationServices {
             guard let serviceResult = service.application?(application, continue: userActivity, restorationHandler: restorationHandler) else { continue }
             result = serviceResult
         }
@@ -504,7 +516,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 8.0, *)
     open func application(_ application: UIApplication, didFailToContinueUserActivityWithType userActivityType: String, error: Error) {
         
-        for service in _services {
+        for service in applicationServices {
             service.application?(application, didFailToContinueUserActivityWithType: userActivityType, error: error)
         }
     }
@@ -513,7 +525,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 8.0, *)
     open func application(_ application: UIApplication, didUpdate userActivity: NSUserActivity) {
         
-        for service in _services {
+        for service in applicationServices {
             service.application?(application, didUpdate: userActivity)
         }
     }
@@ -524,7 +536,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 10.0, *)
     open func application(_ application: UIApplication, userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
         
-        for service in _services {
+        for service in applicationServices {
             service.application?(application, userDidAcceptCloudKitShareWith: cloudKitShareMetadata)
         }
     }
@@ -537,7 +549,7 @@ extension AFSApplicationDelegateDispatcher : UIApplicationDelegate {
     @available(iOS 13.0, *)
     open func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
  
-        for service in _services {
+        for service in applicationServices {
             service.application?(application, didDiscardSceneSessions: sceneSessions)
         }
     }

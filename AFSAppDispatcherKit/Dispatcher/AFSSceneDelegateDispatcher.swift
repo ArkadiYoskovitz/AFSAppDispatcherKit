@@ -14,6 +14,18 @@ import ObjcExtensions
 @available(iOS 13.0, *)
 open class AFSSceneDelegateDispatcher : UIResponder {
     
+    public override init() {
+        super.init()
+        _ = self.monitoredSceneServices
+    }
+    
+    ///
+    /// A public access to the services monitored by the dispatcher, allows a consumer of the framework to make a conviniance access variables
+    ///
+    public var monitoredSceneServices : [AFSSceneDelegateService] {
+        return sceneServices
+    }
+    
     ///
     /// Used to obtain an array of AFSAppDelegateService which are used as plugins,
     ///     to split handling UIApplicationDelegate implementation between several distinct control objects

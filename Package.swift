@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "AFSAppDispatcherKit",
-    platforms: [ .iOS(.v10)],//, .macOS(.v10_15), .watchOS(.v6), .tvOS(.v10)],
+    platforms: [ .iOS(.v9)],//, .macOS(.v10_15), .watchOS(.v6), .tvOS(.v10)],
     products: [
         // Products define the executables and libraries produced by a package, and make them visible to other packages.
         .library(

@@ -27,10 +27,11 @@ extension Selector {
         var outCount = UInt32(0)
         guard let descriptions = protocol_copyMethodDescriptionList(aProtocol, required, instance, &outCount) else { return false }
         
+        defer { descriptions.deallocate() }
+        
         for itemIndex in 0 ... Int(outCount) {
             
             guard let name = descriptions[itemIndex].name , name == self else { continue }
-            descriptions.deallocate()
             return true
         }
         return false
